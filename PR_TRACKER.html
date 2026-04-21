@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✦ PR TRACKER ✦</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #faf7f2;
+    --blush: #f2d5d0;
+    --rose: #c9837a;
+    --deep: #6b3a38;
+    --mauve: #b8a0a8;
+    --sage: #9aad9e;
+    --gold: #c9a96e;
+    --ink: #2a1f1e;
+    --card: #fffcf9;
+    --border: rgba(201,131,122,0.2);
+    --shadow: 0 4px 24px rgba(107,58,56,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 20% -10%, rgba(242,213,208,0.5) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 110%, rgba(184,160,168,0.3) 0%, transparent 60%);
+  }
+
+  /* ── HEADER ── */
+  header {
+    padding: 14px 16px 0;
+    text-align: center;
+  }
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(22px, 6vw, 36px);
+    color: var(--deep);
+    letter-spacing: 0.08em;
+    line-height: 1.2;
+  }
+  .logo span { color: var(--rose); font-style: italic; }
+  .tagline {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--mauve);
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* ── STATS BAR ── */
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 10px 12px 0;
+  }
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 8px 14px;
+    text-align: center;
+    min-width: 76px;
+    box-shadow: var(--shadow);
+  }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: var(--rose);
+    line-height: 1;
+  }
+  .stat-label { font-size: 10px; color: var(--mauve); margin-top: 3px; letter-spacing: 0.1em; }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px 0;
+  }
+  .tab {
+    padding: 8px 18px;
+    border-radius: 999px;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 13px;
+    color: var(--mauve);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tab.active {
+    background: var(--rose);
+    border-color: var(--rose);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(201,131,122,0.35);
+  }
+
+  /* ── ADD BUTTON ── */
+  .add-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: 10px auto 0;
+    padding: 12px 28px;
+    background: var(--deep);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.05em;
+    box-shadow: 0 6px 18px rgba(107,58,56,0.25);
+  }
+  .add-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(107,58,56,0.3); }
+
+  /* ── LIST ── */
+  .list { padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; max-width: 720px; margin: 0 auto; }
+
+  .item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 11px 12px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 6px 10px;
+    box-shadow: var(--shadow);
+    transition: transform 0.15s;
+    animation: slideIn 0.3s ease;
+  }
+  @keyframes slideIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
+  .item:hover { transform: translateY(-2px); }
+
+  .item-header { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .item-name { font-weight: 500; font-size: 15px; color: var(--ink); }
+  .badge {
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+  .badge-pr { background: rgba(201,131,122,0.15); color: var(--rose); }
+  .badge-precam { background: rgba(154,173,158,0.2); color: #5a7a5e; }
+  .badge-won { background: rgba(201,169,110,0.2); color: #8a6a2a; }
+  .badge-lost { background: rgba(184,160,168,0.2); color: var(--mauve); }
+  .badge-pending { background: rgba(201,131,122,0.1); color: var(--rose); }
+  .badge-posted { background: rgba(80,180,120,0.15); color: #3a8a5a; }
+
+  .item-brand { font-size: 12px; color: var(--mauve); }
+  .item-meta { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
+  .meta-item { font-size: 11px; color: var(--mauve); display: flex; align-items: center; gap: 4px; }
+  .meta-item.deadline-near { color: #c05050; font-weight: 500; }
+  .item-note { font-size: 12px; color: #8a7070; font-style: italic; margin-top: 4px; grid-column: 1/-1; line-height: 1.5; }
+
+  .item-actions { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
+  .action-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 5px 10px;
+    font-size: 11px;
+    color: var(--mauve);
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .action-btn:hover { background: var(--blush); color: var(--deep); border-color: var(--rose); }
+  .action-btn.delete:hover { background: #fde8e8; color: #c05050; border-color: #c05050; }
+
+  /* ── MODAL ── */
+  .overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(42,31,30,0.45);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    backdrop-filter: blur(4px);
+    box-sizing: border-box;
+  }
+  .overlay.open { display: flex; }
+  .modal {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 20px;
+    width: 100%;
+    max-width: 480px;
+    max-height: 90vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    box-shadow: 0 20px 60px rgba(107,58,56,0.2);
+    animation: popIn 0.25s ease;
+  }
+  @keyframes popIn { from { opacity:0; transform:scale(0.95); } to { opacity:1; transform:none; } }
+  .modal h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    color: var(--deep);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .field { margin-bottom: 14px; }
+  label { display: block; font-size: 11px; letter-spacing: 0.12em; color: var(--mauve); text-transform: uppercase; margin-bottom: 5px; }
+  input, select, textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    background: var(--cream);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  input[type="date"] {
+    -webkit-appearance: none;
+    appearance: none;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 44px;
+  }
+  input[type="date"]::-webkit-datetime-edit { color: var(--ink); }
+  input[type="date"]::-webkit-input-placeholder { color: var(--mauve); }
+  input:focus, select:focus, textarea:focus { border-color: var(--rose); }
+  textarea { height: 70px; resize: vertical; }
+
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  @media (max-width: 480px) {
+    .field-row { grid-template-columns: 1fr; gap: 0; }
+  }
+
+  .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+  .btn-primary {
+    flex: 1;
+    padding: 12px;
+    background: var(--rose);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+  }
+  .btn-primary:hover { background: var(--deep); }
+  .btn-cancel {
+    padding: 12px 20px;
+    background: transparent;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    color: var(--mauve);
+    cursor: pointer;
+  }
+
+  /* ── EMPTY STATE ── */
+  .empty {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--mauve);
+  }
+  .empty-icon { font-size: 40px; margin-bottom: 12px; }
+  .empty-text { font-size: 14px; line-height: 1.8; }
+
+  /* ── DEADLINE BADGE ── */
+  .deadline-badge {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgba(192,80,80,0.1);
+    color: #c05050;
+    font-weight: 500;
+  }
+
+  /* ── FILTER BAR ── */
+  .filter-bar {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px 16px 0;
+    flex-wrap: wrap;
+  }
+  .filter-btn {
+    padding: 5px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: transparent;
+    font-size: 11px;
+    color: var(--mauve);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .filter-btn.active { background: var(--blush); color: var(--deep); border-color: var(--rose); }
+
+  /* ── PROGRESS ── */
+  .progress-section {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+  .progress-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: var(--shadow);
+    margin-bottom: 10px;
+  }
+  .progress-card h3 { font-family: 'Playfair Display', serif; font-size: 15px; color: var(--deep); margin-bottom: 12px; }
+  .progress-bar-wrap { background: var(--blush); border-radius: 999px; height: 8px; overflow: hidden; margin-top: 6px; }
+  .progress-bar { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--rose), var(--gold)); transition: width 0.6s ease; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--mauve); margin-top: 4px; }
+  .goal-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .goal-item:last-child { border-bottom: none; }
+  .goal-title { font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 6px; }
+  .memo-area {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 13px;
+    color: var(--ink);
+    background: var(--cream);
+    resize: vertical;
+    min-height: 80px;
+  }
+  .memo-area:focus { border-color: var(--rose); outline: none; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">✦ PR <span>Tracker</span> ✦</div>
+  
+</header>
+
+<div class="stats" id="statsBar"></div>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('list', this)">📋 応募リスト</button>
+  <button class="tab" onclick="switchTab('table', this)">📊 一覧表</button>
+  <button class="tab" onclick="switchTab('goals', this)">🌙 目標管理</button>
+</div>
+
+<!-- ── LIST TAB ── -->
+<div id="tab-list">
+  <div style="text-align:center; padding: 12px 16px 0;">
+    <button class="add-btn" onclick="openModal()">＋ 新しく記録する</button>
+  </div>
+  <div class="filter-bar" id="filterBar">
+    <button class="filter-btn active" onclick="setFilter('all', this)">すべて</button>
+    <button class="filter-btn" onclick="setFilter('pr', this)">案件</button>
+    <button class="filter-btn" onclick="setFilter('precam', this)">プレキャン</button>
+    <button class="filter-btn" onclick="setFilter('won', this)">当選</button>
+    <button class="filter-btn" onclick="setFilter('pending', this)">応募中</button>
+    <button class="filter-btn" onclick="setFilter('deadline', this)">期限近い</button>
+  </div>
+  <div style="display:flex; justify-content:flex-end; padding:10px 16px 0; max-width:720px; margin:0 auto;">
+    <select id="listSort" onchange="renderList()" style="padding:7px 12px; border:1.5px solid var(--border); border-radius:10px; background:var(--card); font-family:'Noto Sans JP',sans-serif; font-size:12px; color:var(--ink); outline:none; cursor:pointer;">
+      <option value="applied_desc">応募日 新しい順</option>
+      <option value="applied_asc">応募日 古い順</option>
+      <option value="deadline_asc">投稿期日 近い順</option>
+      <option value="deadline_desc">投稿期日 遠い順</option>
+      <option value="status">ステータス順（当選→応募中→落選）</option>
+      <option value="type">種別順（PR→プレキャン）</option>
+      <option value="brand_asc">ブランド名順（A→Z）</option>
+      <option value="brand_desc">ブランド名順（Z→A）</option>
+    </select>
+  </div>
+  <div class="list" id="itemList"></div>
+</div>
+
+<!-- ── GOALS TAB ── -->
+<div id="tab-goals" style="display:none">
+  <div class="progress-section" style="padding-top:16px;">
+
+    <!-- フォロワー目標 -->
+    <div class="progress-card">
+      <h3>📊 フォロワー目標</h3>
+      <div class="goal-item">
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:8px;">
+          <div style="display:flex; align-items:center; gap:6px; flex:1; min-width:120px;">
+            <span style="font-size:12px; color:var(--mauve); white-space:nowrap;">現在</span>
+            <input type="number" id="followerCurrent" value="0" min="0"
+              style="width:80px; padding:5px 8px; border:1.5px solid var(--border); border-radius:8px; font-size:13px; font-family:'Noto Sans JP',sans-serif; color:var(--ink); background:var(--cream); outline:none;"
+              oninput="updateFollower()">
+            <span style="font-size:12px; color:var(--mauve);">人</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:6px; flex:1; min-width:120px;">
+            <span style="font-size:12px; color:var(--mauve); white-space:nowrap;">目標</span>
+            <input type="number" id="followerGoal" value="1000" min="1"
+              style="width:80px; padding:5px 8px; border:1.5px solid var(--border); border-radius:8px; font-size:13px; font-family:'Noto Sans JP',sans-serif; color:var(--ink); background:var(--cream); outline:none;"
+              oninput="updateFollower()">
+            <span style="font-size:12px; color:var(--mauve);">人</span>
+          </div>
+          <button onclick="saveFollower()" style="padding:6px 14px; background:var(--rose); color:#fff; border:none; border-radius:8px; font-size:12px; cursor:pointer; white-space:nowrap;">保存</button>
+          <span id="followerSaved" style="font-size:11px; color:var(--sage); display:none;">✓</span>
+        </div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar" id="followerBar" style="width:0%"></div>
+        </div>
+        <div class="progress-label">
+          <span id="followerCurrentLabel">0人</span>
+          <span id="followerPct">0%</span>
+          <span id="followerGoalLabel">目標 1,000人</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- X収益化 -->
+    <div class="progress-card">
+      <h3>⚡ X広告収益化（Creator Revenue Sharing）</h3>
+      <p style="font-size:11px; color:var(--mauve); margin-bottom:10px;">以下の3つをすべて満たすと申請できます</p>
+      <div class="goal-item" style="display:flex; align-items:center; gap:10px;">
+        <label style="display:flex; align-items:center; gap:8px; cursor:pointer; text-transform:none; letter-spacing:0; font-size:13px; color:var(--ink); font-weight:500;">
+          <input type="checkbox" id="chk_premium" onchange="saveChecks()"
+            style="width:16px; height:16px; accent-color:var(--rose); cursor:pointer;">
+          X Premium（Basic以外）に加入済み
+        </label>
+      </div>
+      <div class="goal-item" style="display:flex; align-items:center; gap:10px;">
+        <label style="display:flex; align-items:center; gap:8px; cursor:pointer; text-transform:none; letter-spacing:0; font-size:13px; color:var(--ink); font-weight:500;">
+          <input type="checkbox" id="chk_500" onchange="saveChecks()"
+            style="width:16px; height:16px; accent-color:var(--rose); cursor:pointer;">
+          認証済みフォロワー（青バッジ）500人以上
+        </label>
+      </div>
+      <div class="goal-item">
+        <label style="display:flex; align-items:center; gap:8px; cursor:pointer; text-transform:none; letter-spacing:0; font-size:13px; color:var(--ink); font-weight:500; margin-bottom:8px;">
+          <input type="checkbox" id="chk_imp" onchange="saveChecks()"
+            style="width:16px; height:16px; accent-color:var(--rose); cursor:pointer;">
+          過去3ヶ月で500万オーガニックインプレッション達成
+        </label>
+        <div style="font-size:11px; color:var(--mauve); margin-bottom:6px;">現在の進捗を入力してね（万インプ）</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar" id="impBar" style="width:0%"></div>
+        </div>
+        <div class="progress-label"><span id="impCurrent">0万</span><span>目標 500万</span></div>
+        <div style="display:flex; gap:8px; margin-top:8px; align-items:center;">
+          <input type="number" id="impInput" placeholder="例：120" style="flex:1; font-size:13px; padding:8px 12px;" />
+          <button onclick="updateImp()" style="padding:8px 14px; background:var(--rose); color:#fff; border:none; border-radius:8px; font-size:12px; cursor:pointer; white-space:nowrap;">更新</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 戦略メモ -->
+    <div class="progress-card">
+      <h3>📝 戦略メモ</h3>
+      <p style="font-size:12px; color:var(--mauve); margin-bottom:10px;">PR獲得・インプ増加のための作戦メモ</p>
+      <textarea class="memo-area" id="memoArea" placeholder="例：投稿は週4以上キープ、期日管理を徹底する..."></textarea>
+      <button onclick="saveMemo()" style="margin-top:8px; padding:8px 18px; background:var(--deep); color:#fff; border:none; border-radius:8px; font-size:12px; cursor:pointer;">メモを保存</button>
+      <span id="memoSaved" style="font-size:11px; color:var(--sage); margin-left:8px; display:none;">✓ 保存しました</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── TABLE TAB ── -->
+<div id="tab-table" style="display:none">
+  <div style="max-width:960px; margin:0 auto; padding:16px;">
+    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:14px;">
+      <input type="text" id="tableSearch" placeholder="🔍 ブランド・商品名で検索..." oninput="renderTable()"
+        style="width:100%; box-sizing:border-box; padding:9px 14px; border:1.5px solid var(--border); border-radius:10px; background:var(--card); font-family:'Noto Sans JP',sans-serif; font-size:13px; color:var(--ink); outline:none;">
+      <select id="tableSort" onchange="renderTable()"
+        style="width:100%; box-sizing:border-box; padding:9px 14px; border:1.5px solid var(--border); border-radius:10px; background:var(--card); font-family:'Noto Sans JP',sans-serif; font-size:13px; color:var(--ink); outline:none; cursor:pointer;">
+        <option value="applied_desc">応募日 新しい順</option>
+        <option value="applied_asc">応募日 古い順</option>
+        <option value="deadline_asc">投稿期日 近い順</option>
+        <option value="deadline_desc">投稿期日 遠い順</option>
+        <option value="status">ステータス順（当選→応募中→落選）</option>
+        <option value="type">種別順（PR→プレキャン）</option>
+        <option value="brand_asc">ブランド名順（A→Z）</option>
+        <option value="brand_desc">ブランド名順（Z→A）</option>
+      </select>
+    </div>
+    <div style="overflow-x:auto; border-radius:16px; box-shadow:var(--shadow); background:var(--card); border:1px solid var(--border);">
+      <table id="mainTable" style="width:100%; border-collapse:collapse; font-size:13px; min-width:640px;">
+        <thead>
+          <tr style="background:linear-gradient(135deg, var(--blush) 0%, rgba(184,160,168,0.2) 100%); border-bottom:1.5px solid var(--border);">
+            <th style="padding:13px 8px; text-align:left; font-size:10px; letter-spacing:0.12em; color:var(--deep); font-weight:600; text-transform:uppercase; white-space:nowrap; min-width:70px;">種別</th>
+            <th style="padding:13px 8px; text-align:left; font-size:10px; letter-spacing:0.12em; color:var(--deep); font-weight:600; text-transform:uppercase; min-width:120px;">ブランド</th>
+            <th style="padding:13px 8px; text-align:left; font-size:10px; letter-spacing:0.12em; color:var(--deep); font-weight:600; text-transform:uppercase; min-width:150px;">商品・案件</th>
+            <th style="padding:13px 8px; text-align:center; font-size:10px; letter-spacing:0.12em; color:var(--deep); font-weight:600; text-transform:uppercase; white-space:nowrap; min-width:90px;">応募日</th>
+            <th style="padding:13px 8px; text-align:center; font-size:10px; letter-spacing:0.12em; color:var(--deep); font-weight:600; text-transform:uppercase; white-space:nowrap; min-width:70px;">当落</th>
+            <th style="padding:13px 8px; text-align:center; font-size:10px; letter-spacing:0.12em; color:var(--deep); font-weight:600; text-transform:uppercase; white-space:nowrap; min-width:90px;">投稿期日</th>
+            <th style="padding:13px 8px; text-align:center; font-size:10px; letter-spacing:0.12em; color:var(--deep); font-weight:600; text-transform:uppercase; white-space:nowrap; min-width:60px;">投稿</th>
+            <th style="padding:13px 8px; text-align:left; font-size:10px; letter-spacing:0.12em; color:var(--deep); font-weight:600; text-transform:uppercase; min-width:120px;">メモ</th>
+            <th style="padding:13px 8px; text-align:center; font-size:10px; letter-spacing:0.12em; color:var(--deep); font-weight:600; text-transform:uppercase; min-width:80px;">操作</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+      <div id="tableEmpty" style="display:none; text-align:center; padding:48px 24px; color:var(--mauve);">
+        <div style="font-size:36px; margin-bottom:10px;">🌸</div>
+        <div style="font-size:14px;">該当するデータがありません</div>
+      </div>
+    </div>
+    <div style="display:flex; gap:14px; flex-wrap:wrap; margin-top:12px; padding:0 2px; align-items:center;">
+      <span style="font-size:11px; color:var(--mauve); display:flex; align-items:center; gap:5px;"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--rose);opacity:.7;"></span>PR案件</span>
+      <span style="font-size:11px; color:var(--mauve); display:flex; align-items:center; gap:5px;"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--sage);opacity:.8;"></span>プレキャン</span>
+      <span style="font-size:11px; color:#c05050;">📅 赤字 = 期日3日以内</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL ── -->
+<div class="overlay" id="overlay" onclick="closeOnBg(event)">
+  <div class="modal">
+    <h2 id="modalTitle">✦ 新規記録</h2>
+    <div class="field">
+      <label>種別</label>
+      <select id="f_type">
+        <option value="precam">プレキャン</option>
+        <option value="pr">PR案件</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>ブランド / 商品名</label>
+      <input type="text" id="f_brand" placeholder="例：VT Cosmetics">
+    </div>
+    <div class="field">
+      <label>商品・案件詳細</label>
+      <input type="text" id="f_product" placeholder="例：リードルショット300">
+    </div>
+    <div class="field">
+      <label>応募日</label>
+      <input type="date" id="f_applied">
+    </div>
+    <div class="field">
+      <label>結果ステータス</label>
+      <select id="f_status">
+        <option value="pending">応募中</option>
+        <option value="won">当選 🎉</option>
+        <option value="lost">落選</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>投稿期日</label>
+      <input type="date" id="f_deadline" placeholder="yyyy/mm/dd">
+    </div>
+    <div class="field">
+      <label>投稿済み？</label>
+      <select id="f_posted">
+        <option value="no">未投稿</option>
+        <option value="yes">投稿済み ✓</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>メモ（条件・ハッシュタグ・感想など）</label>
+      <textarea id="f_note" placeholder="例：PR必須、#VTコスメ #リードルショット、フォロワー獲得数＋5人"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">キャンセル</button>
+      <button class="btn-primary" onclick="saveItem()">保存する</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let items = JSON.parse(localStorage.getItem('pr_items') || '[]');
+let editId = null;
+let currentFilter = 'all';
+let currentTab = 'list';
+
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+
+function switchTab(tab, btn) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-list').style.display = tab === 'list' ? '' : 'none';
+  document.getElementById('tab-table').style.display = tab === 'table' ? '' : 'none';
+  document.getElementById('tab-goals').style.display = tab === 'goals' ? '' : 'none';
+  if (tab === 'table') renderTable();
+}
+
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderList();
+}
+
+function daysUntil(dateStr) {
+  if (!dateStr) return null;
+  const d = new Date(dateStr);
+  const now = new Date();
+  now.setHours(0,0,0,0);
+  return Math.ceil((d - now) / 86400000);
+}
+
+function renderStats() {
+  const total = items.length;
+  const won = items.filter(i => i.status === 'won').length;
+  const pending = items.filter(i => i.status === 'pending').length;
+  const posted = items.filter(i => i.posted === 'yes').length;
+  const rate = total ? Math.round(won / total * 100) : 0;
+  document.getElementById('statsBar').innerHTML = `
+    <div class="stat-card"><div class="stat-num">${total}</div><div class="stat-label">総応募数</div></div>
+    <div class="stat-card"><div class="stat-num">${won}</div><div class="stat-label">当選</div></div>
+    <div class="stat-card"><div class="stat-num">${pending}</div><div class="stat-label">結果待ち</div></div>
+    <div class="stat-card"><div class="stat-num">${rate}%</div><div class="stat-label">当選率</div></div>
+    <div class="stat-card"><div class="stat-num">${posted}</div><div class="stat-label">投稿済み</div></div>
+  `;
+}
+
+function renderList() {
+  const el = document.getElementById('itemList');
+  let filtered = [...items];
+
+  if (currentFilter === 'pr') filtered = filtered.filter(i => i.type === 'pr');
+  else if (currentFilter === 'precam') filtered = filtered.filter(i => i.type === 'precam');
+  else if (currentFilter === 'won') filtered = filtered.filter(i => i.status === 'won');
+  else if (currentFilter === 'pending') filtered = filtered.filter(i => i.status === 'pending');
+  else if (currentFilter === 'deadline') {
+    filtered = filtered.filter(i => {
+      const d = daysUntil(i.deadline);
+      return d !== null && d <= 7 && d >= 0 && i.posted !== 'yes';
+    });
+  }
+
+  // Sort
+  const sort = document.getElementById('listSort')?.value || 'applied_desc';
+  const statusOrder = { won: 0, pending: 1, lost: 2 };
+  filtered.sort((a, b) => {
+    if (sort === 'applied_desc') return (b.applied || '').localeCompare(a.applied || '');
+    if (sort === 'applied_asc')  return (a.applied || '').localeCompare(b.applied || '');
+    if (sort === 'deadline_asc') return (a.deadline || '9999-99-99').localeCompare(b.deadline || '9999-99-99');
+    if (sort === 'deadline_desc') return (b.deadline || '0').localeCompare(a.deadline || '0');
+    if (sort === 'status') return (statusOrder[a.status] ?? 9) - (statusOrder[b.status] ?? 9);
+    if (sort === 'type') return (a.type === 'pr' ? 0 : 1) - (b.type === 'pr' ? 0 : 1);
+    if (sort === 'brand_asc') return (a.brand || '').localeCompare(b.brand || '', 'ja');
+    if (sort === 'brand_desc') return (b.brand || '').localeCompare(a.brand || '', 'ja');
+    return 0;
+  });
+
+  if (!filtered.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">🌸</div><div class="empty-text">まだ記録がありません<br>「新しく記録する」から追加しよう！</div></div>`;
+    return;
+  }
+
+  el.innerHTML = filtered.map(item => {
+    const days = daysUntil(item.deadline);
+    const isNear = days !== null && days <= 3 && days >= 0 && item.posted !== 'yes';
+    const deadlineStr = item.deadline
+      ? `<span class="meta-item ${isNear ? 'deadline-near' : ''}">📅 期日：${item.deadline}${days !== null ? `（${days === 0 ? '今日！' : `あと${days}日`}）` : ''}</span>`
+      : '';
+    const postedBadge = item.posted === 'yes' ? `<span class="badge badge-posted">投稿済み ✓</span>` : '';
+    const statusBadge = item.status === 'won'
+      ? `<span class="badge badge-won">当選 🎉</span>`
+      : item.status === 'lost'
+      ? `<span class="badge badge-lost">落選</span>`
+      : `<span class="badge badge-pending">応募中</span>`;
+
+    return `
+    <div class="item">
+      <div>
+        <div class="item-header">
+          <span class="item-name">${[item.brand, item.product].filter(Boolean).join(' ')}</span>
+          <span class="badge ${item.type === 'pr' ? 'badge-pr' : 'badge-precam'}">${item.type === 'pr' ? 'PR案件' : 'プレキャン'}</span>
+          ${statusBadge}
+          ${postedBadge}
+        </div>
+        <div class="item-meta">
+          ${item.applied ? `<span class="meta-item">📝 応募：${item.applied}</span>` : ''}
+          ${deadlineStr}
+        </div>
+        ${item.note ? `<div class="item-note">💬 ${item.note}</div>` : ''}
+      </div>
+      <div class="item-actions">
+        ${item.status === 'won' && item.posted !== 'yes' ? `<button class="action-btn" onclick="markPosted('${item.id}')">投稿済みに</button>` : ''}
+        <button class="action-btn" onclick="editItem('${item.id}')">編集</button>
+        <button class="action-btn delete" onclick="deleteItem('${item.id}')">削除</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderTable() {
+  const search = (document.getElementById('tableSearch')?.value || '').toLowerCase();
+  const sort = document.getElementById('tableSort')?.value || 'applied_desc';
+
+  let filtered = items.filter(i => {
+    if (!search) return true;
+    return (i.brand + i.product + i.note).toLowerCase().includes(search);
+  });
+
+  const statusOrder = { won: 0, pending: 1, lost: 2 };
+  filtered.sort((a, b) => {
+    if (sort === 'applied_desc') return (b.applied || '').localeCompare(a.applied || '');
+    if (sort === 'applied_asc')  return (a.applied || '').localeCompare(b.applied || '');
+    if (sort === 'deadline_asc') return (a.deadline || '9999-99-99').localeCompare(b.deadline || '9999-99-99');
+    if (sort === 'deadline_desc') return (b.deadline || '0').localeCompare(a.deadline || '0');
+    if (sort === 'status') return (statusOrder[a.status] ?? 9) - (statusOrder[b.status] ?? 9);
+    if (sort === 'type') return (a.type === 'pr' ? 0 : 1) - (b.type === 'pr' ? 0 : 1);
+    if (sort === 'brand_asc') return (a.brand || '').localeCompare(b.brand || '', 'ja');
+    if (sort === 'brand_desc') return (b.brand || '').localeCompare(a.brand || '', 'ja');
+    return 0;
+  });
+
+  const tbody = document.getElementById('tableBody');
+  const empty = document.getElementById('tableEmpty');
+
+  if (!filtered.length) {
+    tbody.innerHTML = '';
+    empty.style.display = '';
+    return;
+  }
+  empty.style.display = 'none';
+
+  tbody.innerHTML = filtered.map((item, idx) => {
+    const days = daysUntil(item.deadline);
+    const isNear = days !== null && days <= 3 && days >= 0 && item.posted !== 'yes';
+    const isOverdue = days !== null && days < 0 && item.posted !== 'yes';
+
+    const typeDot = item.type === 'pr'
+      ? `<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--rose);margin-right:5px;opacity:.8;"></span>`
+      : `<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--sage);margin-right:5px;opacity:.8;"></span>`;
+    const typeLabel = item.type === 'pr' ? 'PR' : 'プレキャン';
+
+    const statusHtml = item.status === 'won'
+      ? `<span style="display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;background:rgba(201,169,110,0.18);color:#8a6a2a;font-weight:500;white-space:nowrap;">当選 🎉</span>`
+      : item.status === 'lost'
+      ? `<span style="display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;background:rgba(184,160,168,0.2);color:var(--mauve);white-space:nowrap;">落選</span>`
+      : `<span style="display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;background:rgba(201,131,122,0.12);color:var(--rose);white-space:nowrap;">応募中</span>`;
+
+    const deadlineHtml = item.deadline
+      ? `<span style="white-space:nowrap;color:${isOverdue ? '#c05050' : isNear ? '#c05050' : 'var(--ink)'}; font-weight:${isNear || isOverdue ? '600' : '400'}">
+          ${item.deadline}${isOverdue ? ` ⚠️` : isNear ? `（${days === 0 ? '今日！' : `あと${days}日`}）` : ''}
+        </span>`
+      : `<span style="color:var(--mauve);">—</span>`;
+
+    const postedHtml = item.posted === 'yes'
+      ? `<span style="color:#3a8a5a; font-size:13px;">✓ 済</span>`
+      : item.status === 'won'
+      ? `<button onclick="markPosted('${item.id}')" style="padding:4px 10px; background:transparent; border:1px solid var(--border); border-radius:7px; font-size:11px; color:var(--mauve); cursor:pointer; white-space:nowrap;" onmouseover="this.style.background='var(--blush)'" onmouseout="this.style.background='transparent'">投稿済みに</button>`
+      : `<span style="color:var(--mauve); font-size:12px;">—</span>`;
+
+    const rowBg = idx % 2 === 0 ? 'transparent' : 'rgba(242,213,208,0.08)';
+
+    return `<tr style="background:${rowBg}; border-bottom:1px solid rgba(201,131,122,0.1); transition:background 0.15s;" onmouseover="this.style.background='rgba(242,213,208,0.2)'" onmouseout="this.style.background='${rowBg}'">
+      <td style="padding:12px 8px; white-space:nowrap;">${typeDot}${typeLabel}</td>
+      <td style="padding:12px 8px; font-weight:500; color:var(--ink);">${item.brand || '—'}</td>
+      <td style="padding:12px 8px; color:var(--ink);">${item.product || '—'}</td>
+      <td style="padding:12px 8px; text-align:center; color:var(--mauve); white-space:nowrap; font-size:12px;">${item.applied || '—'}</td>
+      <td style="padding:12px 8px; text-align:center;">${statusHtml}</td>
+      <td style="padding:12px 8px; text-align:center; font-size:12px; white-space:nowrap;">${deadlineHtml}</td>
+      <td style="padding:12px 8px; text-align:center;">${postedHtml}</td>
+      <td style="padding:12px 8px; font-size:12px; color:#8a7070; font-style:italic; max-width:160px;"><div style="max-height:60px; overflow-y:auto; white-space:pre-wrap; word-break:break-all; line-height:1.5;">${item.note || '—'}</div></td>
+      <td style="padding:12px 8px; text-align:center; white-space:nowrap;">
+        <button onclick="editItem('${item.id}')" style="padding:4px 10px; background:transparent; border:1px solid var(--border); border-radius:7px; font-size:11px; color:var(--mauve); cursor:pointer; margin-right:4px;" onmouseover="this.style.background='var(--blush)'" onmouseout="this.style.background='transparent'">編集</button>
+        <button onclick="deleteItem('${item.id}')" style="padding:4px 10px; background:transparent; border:1px solid rgba(192,80,80,0.2); border-radius:7px; font-size:11px; color:#c05050; cursor:pointer;" onmouseover="this.style.background='#fde8e8'" onmouseout="this.style.background='transparent'">削除</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function render() { renderStats(); renderList(); }
+
+function openModal(id) {
+  editId = id || null;
+  const m = id ? items.find(i => i.id === id) : null;
+  document.getElementById('modalTitle').textContent = id ? '✦ 編集' : '✦ 新規記録';
+  document.getElementById('f_type').value = m?.type || 'precam';
+  document.getElementById('f_brand').value = m?.brand || '';
+  document.getElementById('f_product').value = m?.product || '';
+  document.getElementById('f_applied').value = m?.applied || new Date().toISOString().slice(0,10);
+  document.getElementById('f_status').value = m?.status || 'pending';
+  document.getElementById('f_deadline').value = m?.deadline || '';
+  document.getElementById('f_posted').value = m?.posted || 'no';
+  document.getElementById('f_note').value = m?.note || '';
+  document.getElementById('overlay').classList.add('open');
+}
+
+function closeModal() { document.getElementById('overlay').classList.remove('open'); }
+function closeOnBg(e) { if (e.target === document.getElementById('overlay')) closeModal(); }
+
+function saveItem() {
+  const brand = document.getElementById('f_brand').value.trim();
+  const product = document.getElementById('f_product').value.trim();
+  if (!brand && !product) { alert('ブランドまたは商品名を入力してください'); return; }
+  const obj = {
+    id: editId || uid(),
+    type: document.getElementById('f_type').value,
+    brand, product,
+    applied: document.getElementById('f_applied').value,
+    status: document.getElementById('f_status').value,
+    deadline: document.getElementById('f_deadline').value,
+    posted: document.getElementById('f_posted').value,
+    note: document.getElementById('f_note').value.trim(),
+  };
+  if (editId) { const idx = items.findIndex(i => i.id === editId); items[idx] = obj; }
+  else { items.unshift(obj); }
+  save(); closeModal(); render(); if (currentTab === 'table') renderTable();
+}
+
+function editItem(id) { openModal(id); }
+
+function deleteItem(id) {
+  showConfirm('この記録を削除しますか？', () => {
+    items = items.filter(i => i.id !== id);
+    save(); render(); if (currentTab === 'table') renderTable();
+  });
+}
+
+function markPosted(id) {
+  const item = items.find(i => i.id === id);
+  if (item) { item.posted = 'yes'; save(); render(); if (currentTab === 'table') renderTable(); }
+}
+
+function save() { localStorage.setItem('pr_items', JSON.stringify(items)); }
+
+// ── Goals ──
+function updateFollower() {
+  const cur = parseFloat(document.getElementById('followerCurrent').value) || 0;
+  const goal = parseFloat(document.getElementById('followerGoal').value) || 1;
+  const pct = Math.min(cur / goal * 100, 100).toFixed(1);
+  document.getElementById('followerBar').style.width = pct + '%';
+  document.getElementById('followerCurrentLabel').textContent = cur.toLocaleString() + '人';
+  document.getElementById('followerGoalLabel').textContent = '目標 ' + goal.toLocaleString() + '人';
+  document.getElementById('followerPct').textContent = pct + '%';
+}
+
+function saveFollower() {
+  localStorage.setItem('pr_follower_cur', document.getElementById('followerCurrent').value);
+  localStorage.setItem('pr_follower_goal', document.getElementById('followerGoal').value);
+  const s = document.getElementById('followerSaved');
+  s.style.display = 'inline';
+  setTimeout(() => s.style.display = 'none', 2000);
+}
+
+function saveChecks() {
+  localStorage.setItem('pr_chk_premium', document.getElementById('chk_premium').checked);
+  localStorage.setItem('pr_chk_500', document.getElementById('chk_500').checked);
+  localStorage.setItem('pr_chk_imp', document.getElementById('chk_imp').checked);
+}
+
+function updateImp() {
+  const v = parseFloat(document.getElementById('impInput').value) || 0;
+  const pct = Math.min(v / 500 * 100, 100);
+  document.getElementById('impBar').style.width = pct + '%';
+  document.getElementById('impCurrent').textContent = v + '万';
+  localStorage.setItem('pr_imp', v);
+}
+
+function saveMemo() {
+  localStorage.setItem('pr_memo', document.getElementById('memoArea').value);
+  const s = document.getElementById('memoSaved');
+  s.style.display = 'inline';
+  setTimeout(() => s.style.display = 'none', 2000);
+}
+
+// ── Init ──
+// フォロワー（emptyは常に0スタート）
+document.getElementById('followerCurrent').value = 0;
+updateFollower();
+
+// チェックボックス
+if (localStorage.getItem('pr_chk_premium') === 'true') document.getElementById('chk_premium').checked = true;
+if (localStorage.getItem('pr_chk_500') === 'true') document.getElementById('chk_500').checked = true;
+if (localStorage.getItem('pr_chk_imp') === 'true') document.getElementById('chk_imp').checked = true;
+
+// インプ
+const savedImp = localStorage.getItem('pr_imp');
+if (savedImp) {
+  document.getElementById('impInput').value = savedImp;
+  document.getElementById('impCurrent').textContent = savedImp + '万';
+  document.getElementById('impBar').style.width = Math.min(savedImp / 500 * 100, 100) + '%';
+}
+
+// メモ
+const savedMemo = localStorage.getItem('pr_memo');
+if (savedMemo) document.getElementById('memoArea').value = savedMemo;
+
+render();
+</script>
+
+<!-- ── FOOTER ── -->
+<div style="margin-top:40px; padding:0 16px 40px; max-width:720px; margin-left:auto; margin-right:auto;">
+  <div style="background:rgba(201,169,110,0.1); border:1px solid rgba(201,169,110,0.3); border-radius:14px; padding:16px 18px; margin-bottom:20px;">
+    <div style="font-size:13px; font-weight:600; color:#8a6a2a; margin-bottom:10px;">⚠️ 免責事項・ご利用上の注意</div>
+    <p style="font-size:12px; color:#7a6030; line-height:1.8;">本ツールは個人が自分用に作成し、配布しているものです。入力データはお使いのブラウザにのみ保存され、外部には送信されません。本ツールのご利用は<strong>完全に自己責任</strong>となります。本ツールを利用したことにより生じたいかなるトラブル・損害・不利益について、作成者（@3zantn）は一切の責任を負いません。</p>
+  </div>
+  <div style="text-align:center; padding:20px 0;">
+    <p style="font-size:13px; color:var(--mauve); line-height:2; margin-bottom:16px;">
+      このツールは美容垢 <strong style="color:var(--deep);">@3zantn</strong> が<br>自分用に作って配布しているものです🎁<br>感想・バグ報告はXのDMまで気軽にどうぞ！
+    </p>
+    <a href="https://x.com/3zantn" target="_blank"
+      style="display:inline-flex; align-items:center; gap:8px; background:var(--ink); color:#fff; text-decoration:none; padding:14px 28px; border-radius:999px; font-family:'Noto Sans JP',sans-serif; font-size:14px; font-weight:500; letter-spacing:0.05em; box-shadow:0 6px 18px rgba(42,31,30,0.2);">
+      𝕏　@3zantn をフォローする
+    </a>
+    <p style="font-size:11px; color:var(--mauve); margin-top:20px; line-height:2;">
+      © 2026 @3zantn<br>無断転載・再配布・二次利用はご遠慮ください
+    </p>
+  </div>
+</div>
+
+<!-- ── CONFIRM DIALOG ── -->
+<div id="confirmOverlay" style="display:none; position:fixed; inset:0; background:rgba(42,31,30,0.45); z-index:200; align-items:center; justify-content:center; padding:16px; backdrop-filter:blur(4px);">
+  <div style="background:var(--card); border-radius:16px; padding:24px; width:100%; max-width:320px; box-shadow:0 20px 60px rgba(107,58,56,0.2); text-align:center; animation:popIn 0.2s ease;">
+    <div style="font-size:28px; margin-bottom:10px;">🗑️</div>
+    <div id="confirmMsg" style="font-size:14px; color:var(--ink); margin-bottom:20px; line-height:1.6;"></div>
+    <div style="display:flex; gap:10px; justify-content:center;">
+      <button onclick="confirmCancel()" style="padding:10px 22px; background:transparent; border:1.5px solid var(--border); border-radius:10px; font-family:'Noto Sans JP',sans-serif; font-size:13px; color:var(--mauve); cursor:pointer;">キャンセル</button>
+      <button id="confirmOkBtn" style="padding:10px 22px; background:#c05050; color:#fff; border:none; border-radius:10px; font-family:'Noto Sans JP',sans-serif; font-size:13px; cursor:pointer; font-weight:500;">削除する</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let _confirmCallback = null;
+function showConfirm(msg, cb) {
+  _confirmCallback = cb;
+  document.getElementById('confirmMsg').textContent = msg;
+  const ov = document.getElementById('confirmOverlay');
+  ov.style.display = 'flex';
+}
+function confirmCancel() { document.getElementById('confirmOverlay').style.display = 'none'; _confirmCallback = null; }
+document.getElementById('confirmOkBtn').addEventListener('click', () => {
+  document.getElementById('confirmOverlay').style.display = 'none';
+  if (_confirmCallback) { _confirmCallback(); _confirmCallback = null; }
+});
+</script>
+
+</body>
+</html>
