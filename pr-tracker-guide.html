@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✦ PR TRACKER 使い方ガイド ✦</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&family=Shippori+Mincho:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink-deep: #c2185b;
+    --pink-mid: #e91e8c;
+    --pink-light: #f48fb1;
+    --pink-pale: #fce4ec;
+    --pink-ultra: #fff0f6;
+    --gold: #d4a017;
+    --dark: #1a0a10;
+    --text: #3d1a28;
+    --text-light: #7a3a55;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    background: var(--pink-ultra);
+    color: var(--text);
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* 背景装飾 */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 10% 20%, rgba(244,143,177,0.18) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 60% at 90% 80%, rgba(194,24,91,0.10) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 50% 50%, rgba(255,240,246,1) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ヘッダー */
+  .header {
+    text-align: center;
+    padding: 48px 24px 36px;
+    margin-bottom: 40px;
+    background: linear-gradient(135deg, #fff0f6 0%, #fce4ec 50%, #fff0f6 100%);
+    border: 2px solid var(--pink-light);
+    border-radius: 24px;
+    box-shadow:
+      0 0 0 6px rgba(244,143,177,0.15),
+      0 8px 32px rgba(194,24,91,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::before {
+    content: '✦ ✦ ✦';
+    display: block;
+    font-size: 11px;
+    letter-spacing: 12px;
+    color: var(--pink-light);
+    margin-bottom: 16px;
+  }
+
+  .header::after {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(233,30,140,0.08) 0%, transparent 70%);
+  }
+
+  .header h1 {
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--pink-deep);
+    letter-spacing: 4px;
+    line-height: 1.3;
+    margin-bottom: 8px;
+  }
+
+  .header .subtitle {
+    font-size: 13px;
+    color: var(--text-light);
+    letter-spacing: 2px;
+    font-family: 'Shippori Mincho', serif;
+  }
+
+  .header .badge {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 5px 18px;
+    background: linear-gradient(90deg, var(--pink-deep), var(--pink-mid));
+    color: #fff;
+    font-size: 11px;
+    border-radius: 20px;
+    letter-spacing: 2px;
+  }
+
+  /* セクション */
+  .section {
+    background: #fff;
+    border-radius: 20px;
+    border: 1.5px solid rgba(244,143,177,0.4);
+    box-shadow: 0 4px 20px rgba(194,24,91,0.07);
+    margin-bottom: 24px;
+    overflow: hidden;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .section:nth-child(2) { animation-delay: 0.05s; }
+  .section:nth-child(3) { animation-delay: 0.10s; }
+  .section:nth-child(4) { animation-delay: 0.15s; }
+  .section:nth-child(5) { animation-delay: 0.20s; }
+  .section:nth-child(6) { animation-delay: 0.25s; }
+
+  .section-header {
+    background: linear-gradient(90deg, var(--pink-deep) 0%, #e91e8c 100%);
+    color: #fff;
+    padding: 14px 22px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .section-header .icon {
+    font-size: 18px;
+  }
+
+  .section-header .step-num {
+    background: rgba(255,255,255,0.25);
+    border-radius: 50%;
+    width: 26px; height: 26px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 900;
+    flex-shrink: 0;
+  }
+
+  .section-body {
+    padding: 22px;
+  }
+
+  /* 説明テキスト */
+  .desc {
+    font-size: 14px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+
+  /* ステップカード */
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .step-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: var(--pink-ultra);
+    border: 1px solid rgba(244,143,177,0.3);
+    border-radius: 14px;
+    padding: 14px 16px;
+  }
+
+  .step-card .num {
+    background: linear-gradient(135deg, var(--pink-deep), var(--pink-mid));
+    color: #fff;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 900;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .step-card .content {
+    flex: 1;
+  }
+
+  .step-card .title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--pink-deep);
+    margin-bottom: 4px;
+  }
+
+  .step-card .text {
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--text-light);
+  }
+
+  /* タグ */
+  .tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin: 2px 2px 2px 0;
+  }
+
+  .tag-pr { background: #fce4ec; color: var(--pink-deep); border: 1px solid #f48fb1; }
+  .tag-pre { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+  .tag-win { background: #fff9c4; color: #f57f17; border: 1px solid #ffe082; }
+  .tag-mid { background: #e3f2fd; color: #1565c0; border: 1px solid #90caf9; }
+  .tag-lost { background: #f3e5f5; color: #6a1b9a; border: 1px solid #ce93d8; }
+
+  /* フィールドリスト */
+  .field-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .field-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 14px;
+    background: var(--pink-ultra);
+    border-radius: 10px;
+    border-left: 3px solid var(--pink-light);
+  }
+
+  .field-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--pink-deep);
+    min-width: 90px;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .field-desc {
+    font-size: 13px;
+    color: var(--text-light);
+    line-height: 1.7;
+  }
+
+  /* ポイントボックス */
+  .point-box {
+    background: linear-gradient(135deg, #fce4ec 0%, #fff0f6 100%);
+    border: 1.5px solid var(--pink-light);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-top: 14px;
+  }
+
+  .point-box .point-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--pink-deep);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .point-box ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .point-box ul li {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.8;
+    padding-left: 16px;
+    position: relative;
+  }
+
+  .point-box ul li::before {
+    content: '✦';
+    position: absolute;
+    left: 0;
+    color: var(--pink-light);
+    font-size: 9px;
+    top: 6px;
+  }
+
+  /* タブ説明 */
+  .tab-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+  }
+
+  @media (max-width: 480px) {
+    .tab-cards { grid-template-columns: 1fr; }
+  }
+
+  .tab-card {
+    background: var(--pink-ultra);
+    border: 1.5px solid rgba(244,143,177,0.4);
+    border-radius: 14px;
+    padding: 14px 12px;
+    text-align: center;
+  }
+
+  .tab-card .tab-icon {
+    font-size: 22px;
+    margin-bottom: 6px;
+  }
+
+  .tab-card .tab-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--pink-deep);
+    margin-bottom: 6px;
+  }
+
+  .tab-card .tab-desc {
+    font-size: 11px;
+    color: var(--text-light);
+    line-height: 1.7;
+  }
+
+  /* 注意事項 */
+  .notice-box {
+    background: #fff8e1;
+    border: 1.5px solid #ffe082;
+    border-radius: 14px;
+    padding: 16px 18px;
+  }
+
+  .notice-box .notice-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #f57f17;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .notice-box ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .notice-box ul li {
+    font-size: 13px;
+    color: #5d4037;
+    line-height: 1.8;
+    padding-left: 16px;
+    position: relative;
+  }
+
+  .notice-box ul li::before {
+    content: '⚠';
+    position: absolute;
+    left: 0;
+    font-size: 10px;
+    top: 4px;
+  }
+
+  /* フッター */
+  .footer {
+    text-align: center;
+    padding: 32px 20px;
+    margin-top: 8px;
+  }
+
+  .footer .deco {
+    font-size: 10px;
+    letter-spacing: 10px;
+    color: var(--pink-light);
+    margin-bottom: 12px;
+  }
+
+  .footer .credit {
+    font-size: 12px;
+    color: var(--text-light);
+    line-height: 1.8;
+  }
+
+  .footer .credit a {
+    color: var(--pink-deep);
+    text-decoration: none;
+    font-weight: 700;
+  }
+
+  .divider {
+    text-align: center;
+    margin: 8px 0 20px;
+    color: var(--pink-light);
+    font-size: 12px;
+    letter-spacing: 8px;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ヘッダー -->
+  <div class="header">
+    <h1>✦ PR TRACKER ✦</h1>
+    <div class="subtitle">使い方ガイド</div>
+    <div class="badge">はじめてのかたへ</div>
+  </div>
+
+  <!-- 概要 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="icon">🌸</span>
+      PR TRACKERってなに？
+    </div>
+    <div class="section-body">
+      <p class="desc">
+        PR案件・プレキャンの応募記録を一か所でまとめて管理できるツールです。<br>
+        当落の追跡・投稿期日の管理・フォロワー目標の設定など、PR活動に必要なことが全部管理できちゃいます✨️
+      </p>
+      <div class="tab-cards">
+        <div class="tab-card">
+          <div class="tab-icon">📋</div>
+          <div class="tab-name">応募リスト</div>
+          <div class="tab-desc">カード形式で案件を一覧確認</div>
+        </div>
+        <div class="tab-card">
+          <div class="tab-icon">📊</div>
+          <div class="tab-name">一覧表</div>
+          <div class="tab-desc">表形式でまとめて確認・管理</div>
+        </div>
+        <div class="tab-card">
+          <div class="tab-icon">🌙</div>
+          <div class="tab-name">目標管理</div>
+          <div class="tab-desc">フォロワー・収益化の進捗を追跡</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 記録の追加 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="step-num">1</span>
+      案件・プレキャンを記録する
+    </div>
+    <div class="section-body">
+      <p class="desc">画面上部の <strong>「＋ 新しく記録する」</strong> ボタンをタップして記録を追加します。</p>
+      <div class="field-list">
+        <div class="field-item">
+          <div class="field-label">種別</div>
+          <div class="field-desc">
+            <span class="tag tag-pre">プレキャン</span>
+            <span class="tag tag-pr">PR案件</span>
+            の2種類から選択
+          </div>
+        </div>
+        <div class="field-item">
+          <div class="field-label">ブランド / 商品名</div>
+          <div class="field-desc">ブランド名と商品名を入力（例：〇〇コスメ / UVクリーム）</div>
+        </div>
+        <div class="field-item">
+          <div class="field-label">応募日</div>
+          <div class="field-desc">応募した日付を選択</div>
+        </div>
+        <div class="field-item">
+          <div class="field-label">結果ステータス</div>
+          <div class="field-desc">
+            <span class="tag tag-mid">応募中</span>
+            <span class="tag tag-win">当選🎉</span>
+            <span class="tag tag-lost">落選</span>
+            から選択。後から変更できます！
+          </div>
+        </div>
+        <div class="field-item">
+          <div class="field-label">投稿期日</div>
+          <div class="field-desc">当選後の投稿締め切り日。<strong style="color:var(--pink-deep)">3日以内は赤字</strong>で警告表示されます</div>
+        </div>
+        <div class="field-item">
+          <div class="field-label">投稿済み？</div>
+          <div class="field-desc">未投稿 / 投稿済み✓ を選択</div>
+        </div>
+        <div class="field-item">
+          <div class="field-label">メモ</div>
+          <div class="field-desc">条件・ハッシュタグ・感想など自由に記録</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ステータスの更新 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="step-num">2</span>
+      当落が出たら更新しよう
+    </div>
+    <div class="section-body">
+      <div class="steps">
+        <div class="step-card">
+          <div class="num">1</div>
+          <div class="content">
+            <div class="title">カードを見つける</div>
+            <div class="text">「応募リスト」タブで該当のカードを探す。フィルターで「応募中」に絞るとすぐ見つかります</div>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="num">2</div>
+          <div class="content">
+            <div class="title">編集ボタンをタップ</div>
+            <div class="text">カード右下の編集アイコンをタップして編集モードへ</div>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="num">3</div>
+          <div class="content">
+            <div class="title">ステータスを変更して保存</div>
+            <div class="text">「当選🎉」に変更したら、投稿期日も忘れずに入力して保存！</div>
+          </div>
+        </div>
+      </div>
+      <div class="point-box" style="margin-top:16px;">
+        <div class="point-title">💡 便利な並び替え機能</div>
+        <ul>
+          <li>「投稿期日 近い順」で期限切れを防ぐ</li>
+          <li>「ステータス順」で当選→応募中→落選の順に整理</li>
+          <li>「ブランド名順」でアーカイブ的に管理</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- フィルター活用 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="step-num">3</span>
+      フィルターで絞り込む
+    </div>
+    <div class="section-body">
+      <p class="desc">「すべて」の横に並んでいるフィルターボタンで表示を切り替えられます。</p>
+      <div class="field-list">
+        <div class="field-item">
+          <div class="field-label">案件 / プレキャン</div>
+          <div class="field-desc">種別ごとに切り替えて確認</div>
+        </div>
+        <div class="field-item">
+          <div class="field-label">当選</div>
+          <div class="field-desc">当選中の案件だけを表示。投稿管理に便利！</div>
+        </div>
+        <div class="field-item">
+          <div class="field-label">応募中</div>
+          <div class="field-desc">結果待ち案件をまとめて確認</div>
+        </div>
+        <div class="field-item">
+          <div class="field-label">期限近い</div>
+          <div class="field-desc"><strong style="color:var(--pink-deep)">投稿期日が3日以内</strong>のものを優先表示。毎日チェックしてね！</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 目標管理 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="step-num">4</span>
+      目標管理タブを使う
+    </div>
+    <div class="section-body">
+      <div class="steps">
+        <div class="step-card">
+          <div class="num">📊</div>
+          <div class="content">
+            <div class="title">フォロワー目標を設定</div>
+            <div class="text">現在のフォロワー数と目標数を入力すると、達成率がバーで表示されます</div>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="num">⚡</div>
+          <div class="content">
+            <div class="title">X収益化の進捗管理</div>
+            <div class="text">X広告収益化（Creator Revenue Sharing）の3条件の達成状況をチェック＆インプ数を記録できます</div>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="num">📝</div>
+          <div class="content">
+            <div class="title">戦略メモ</div>
+            <div class="text">PR獲得・インプ増加の作戦を自由にメモ。保存ボタンで次回も引き継がれます</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 注意事項 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="icon">⚠️</span>
+      注意事項・免責事項
+    </div>
+    <div class="section-body">
+      <div class="notice-box">
+        <div class="notice-title">⚠️ データの保存について</div>
+        <ul>
+          <li>データはブラウザのローカルストレージに保存されます</li>
+          <li><strong>ブラウザのキャッシュ削除・シークレットモードではデータが消えます</strong></li>
+          <li>スマホとPCでは自動同期されません（それぞれ別データ）</li>
+          <li>大切なデータは「一覧表」タブからスクリーンショットで保存しておくと安心🌸</li>
+        </ul>
+      </div>
+      <div class="notice-box" style="margin-top:12px; background:#fff5f7; border-color:#f48fb1;">
+        <div class="notice-title" style="color:var(--pink-deep);">📄 免責事項</div>
+        <ul style="color:#5d2a38;">
+          <li>本ツールは個人が自分用に制作・無償配布しているものです</li>
+          <li>入力データはご利用者様のブラウザ内にのみ保存され、外部には一切送信されません</li>
+          <li><strong>本ツールのご利用は完全に自己責任となります</strong></li>
+          <li>本ツールを利用したことにより生じた、いかなるトラブル・損害・不利益についても、作成者（@3zantn）は一切の責任を負いません</li>
+          <li>予告なく内容の変更・配布の停止を行う場合があります</li>
+        </ul>
+      </div>
+      <div class="point-box" style="margin-top:12px;">
+        <div class="point-title">🌸 作者より</div>
+        <ul>
+          <li>このツールは <strong>@3zantn</strong> が自分用に作って配布しているものです</li>
+          <li>バグ・ご意見はXのDMへ気軽にどうぞ！</li>
+          <li>無断転載・再配布・二次利用はご遠慮ください</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- フッター -->
+  <div class="footer">
+    <div class="credit">
+      PR TRACKER 使い方ガイド<br>
+      made by <a href="https://x.com/3zantn">@3zantn</a> 🎁<br><br>
+      <span style="font-size:11px; color:var(--text-light);">© 2026 @3zantn　無断転載・再配布・二次利用禁止</span>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
