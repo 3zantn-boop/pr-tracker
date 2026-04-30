@@ -614,13 +614,17 @@ function renderStats() {
   const total = items.length;
   const won = items.filter(i => i.status === 'won').length;
   const pending = items.filter(i => i.status === 'pending').length;
+  const lost = items.filter(i => i.status === 'lost').length;
   const posted = items.filter(i => i.posted === 'yes').length;
+  const wonNotPosted = items.filter(i => i.status === 'won' && i.posted !== 'yes').length;
   const rate = total ? Math.round(won / total * 100) : 0;
   document.getElementById('statsBar').innerHTML = `
     <div class="stat-card"><div class="stat-num">${total}</div><div class="stat-label">総応募数</div></div>
     <div class="stat-card"><div class="stat-num">${won}</div><div class="stat-label">当選</div></div>
     <div class="stat-card"><div class="stat-num">${pending}</div><div class="stat-label">結果待ち</div></div>
+    <div class="stat-card"><div class="stat-num">${lost}</div><div class="stat-label">落選</div></div>
     <div class="stat-card"><div class="stat-num">${rate}%</div><div class="stat-label">当選率</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:${wonNotPosted > 0 ? '#c05050' : 'var(--rose)'};">${wonNotPosted}</div><div class="stat-label">未投稿</div></div>
     <div class="stat-card"><div class="stat-num">${posted}</div><div class="stat-label">投稿済み</div></div>
   `;
 }
